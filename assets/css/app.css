@@ -1,0 +1,20 @@
+#save {
+	margin-top: 20px;
+	float: right;
+}
+
+h1 {
+	color: #ad1400;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+#form-options {
+	max-width: 500px;
+	margin: 0 auto;
+	margin-top: 30px;
+}
+
+#status {
+	display: none;
+}

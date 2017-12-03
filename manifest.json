@@ -7,13 +7,14 @@
 
   "browser_action": {
     "default_icon": "icon.png",
-    "options_page": "options.html"
+    "options_page": "options.html",
+    "default_popup": "assistant.html"
   },
 
   "permissions": [
-    "tabs",
     "storage",
-    "activeTab",
-    "notifications"
+    "tabs",
+    "http://*/",
+    "https://*/"
   ]
 }

@@ -6,18 +6,18 @@ function save_options() {
 
     if(typeof url == 'undefined' || url == "") {
         var status = document.getElementById('status');
-        updateStatusMessage("Complete all required options.", true)
+        update_status_message("Complete all required options.", true)
         return;
     }
 
     chrome.storage.sync.set({
         redmineurl: url
     }, function() {
-        updateStatusMessage("Options Saved.", false)
+        update_status_message("Options Saved.", false)
     });
 }
 
-function updateStatusMessage(message, alert) {
+function update_status_message(message, alert) {
     var status = document.getElementById('status');
     status.style.display = 'block';
 
@@ -47,11 +47,5 @@ function restore_options() {
     });
 }
 
-function test() {
-    console.log('teste');
-}
-
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click', save_options);
-
-chrome.browserAction.onClicked.addListener(function(tab) { alert('icon clicked')});

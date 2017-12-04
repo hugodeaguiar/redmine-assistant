@@ -15,9 +15,16 @@
                 width: 300px;
             }
 
+            #options,
             #status {
                 cursor: pointer;
                 text-align: center;
+                width: 100%;
+                display: inline-block;
+            }
+
+            #options {
+                display: none;
             }
         </style>
     </head>
@@ -26,6 +33,7 @@
         <div id="container">
             <h1>Redmine Assistant</h1>
             <div id="status"></div>
+            <strong title="Set Options" id="options">Set Options</strong>
         </div>
         <script src="assistant.js"></script>
     </body>

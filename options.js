@@ -43,7 +43,9 @@ function update_status_message(message, alert) {
 // stored in chrome.storage.
 function restore_options() {
     chrome.storage.sync.get('redmineurl', function(items) {
-        document.getElementById('url').value = items.redmineurl;
+        if(typeof items.redmineurl != 'undefined' && items.redmineurl != "") {
+            document.getElementById('url').value = items.redmineurl;
+        }
     });
 }
 

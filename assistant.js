@@ -7,14 +7,15 @@ function get_redmine_url(callback) {
 	    url = items.redmineurl;
 
     	if(typeof url == 'undefined' || url == "") {
+    		document.getElementById('options').style.display = "inline-block";
 			callback(false);
+		} else {
+			url = url.toLowerCase();
+			url = remove_protocol(url, true);
+			url = remove_protocol(url, false);
+    		document.getElementById('options').style.display = "none";
+			callback(url);
 		}
-
-		url = url.toLowerCase();
-		url = remove_protocol(url, true);
-		url = remove_protocol(url, false);
-
-		callback(url);
 	});
 }
 
@@ -29,6 +30,13 @@ function remove_protocol(url, ssl) {
 
 	return url;
 }
+
+function options_redirect() {
+	var options_url = chrome.extension.getURL("options.html");
+
+	chrome.tabs.create({ url: options_url });
+}
+
 
 function update_status(status) {
 	document.getElementById('status').textContent = status;
@@ -93,3 +101,4 @@ function active_assistant() {
 
 document.addEventListener('DOMContentLoaded', active_assistant);
 document.getElementById('status').addEventListener("click", run_action);
+document.getElementById('options').addEventListener("click", options_redirect);

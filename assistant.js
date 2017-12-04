@@ -1,3 +1,5 @@
+var tab;
+
 function get_redmine_url(callback) {
 	var url;
 
@@ -28,8 +30,23 @@ function remove_protocol(url, ssl) {
 	return url;
 }
 
-function update_status() {
+function update_status(status) {
 	document.getElementById('status').textContent = status;
+}
+
+function run_action() {
+	var statusElement = document.getElementById('status');
+	var current_status = statusElement.textContent;
+
+	switch(statusElement.dataset.status) {
+		case 'start':
+			chrome.tabs.executeScript(tab.id, {
+				code : "document.getElementById('time-logger-menu').querySelector('a.icon-start').click(); document.getElementById('time-logger-menu').querySelector('.icon').textContent;"
+			}, update_status(status));
+			break;
+		case 'pause':
+		break;
+	}
 }
 
 function active_assistant() {
@@ -37,7 +54,6 @@ function active_assistant() {
 		if(url !== false) {
 			var queryInfo = {};
 			chrome.tabs.query(queryInfo, function (tabs) {
-				var tab;
 				for(i in tabs) {
 					if(tabs[i].url.indexOf(url) != -1) {
 						tab = tabs[i];
@@ -49,8 +65,26 @@ function active_assistant() {
 					chrome.tabs.executeScript(tab.id, {
 						code : "document.getElementById('time-logger-menu').querySelector('.icon').textContent;"
 					}, function(status) {
-						document.getElementById('status').textContent = status;
+						status = status[0];
+						if(typeof status != 'undefined' && status != "") {
+							var statusElement = document.getElementById('status');
+							statusElement.textContent = status;
+
+							status = status.toLowerCase();
+
+							if(status.indexOf("iniciar") != -1 || status.indexOf("start") != -1 || status.indexOf("play") != -1) {
+								statusElement.dataset.status = 'start';
+							} else if(status.indexOf("pausar") != -1 || status.indexOf("pause") != -1) {
+								statusElement.dataset.status = 'pause';
+							} else {
+								statusElement.dataset.status = '';
+							}
+						} else {
+							document.getElementById('status').textContent = "ABA NÃO ENCONTRADA";
+						}
 					});
+				} else {
+					document.getElementById('status').textContent = "ABA NÃO ENCONTRADA";
 				}
 			});
 		}
@@ -58,3 +92,4 @@ function active_assistant() {
 }
 
 document.addEventListener('DOMContentLoaded', active_assistant);
+document.getElementById('status').addEventListener("click", run_action);

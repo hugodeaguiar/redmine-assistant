@@ -74,7 +74,7 @@ function active_assistant() {
 						code : "document.getElementById('time-logger-menu').querySelector('.icon').textContent;"
 					}, function(status) {
 						status = status[0];
-						if(typeof status != 'undefined' && status != "") {
+						if(typeof status != 'undefined' && status != "" && status != null) {
 							var statusElement = document.getElementById('status');
 							statusElement.textContent = status;
 

@@ -1,4 +1,18 @@
-var tab, current_status;
+var tab;
+
+var helper = {
+	show_spinner : function() {
+		document.getElementById('container').style.display = "none";
+		document.getElementById('spinner').style.display = "block";
+	},
+
+	hide_spinner : function() {
+		setTimeout(function() {
+			document.getElementById('container').style.display = "block";
+			document.getElementById('spinner').style.display = "none";
+		}, 300);
+	}
+};
 
 function isEmpty(variable) {
 	if(typeof variable == 'undefined' || variable == "" || variable == null) {
@@ -47,9 +61,11 @@ function options_redirect() {
 
 
 function execute_script(script, callback) {
+	helper.show_spinner();
 	chrome.tabs.executeScript(tab.id, {
 		code : script
 	}, function(response) {
+		helper.hide_spinner();
 		callback(response);
 	});
 }

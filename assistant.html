@@ -3,37 +3,20 @@
     <head>
         <title>Redmine Assistant</title>
         <meta charset="utf-8">
-        <style>
-            h1 {
-                font-size: 16px;
-                text-transform: uppercase;
-                text-align: center;
-                color: #ce1800;
-            }
-
-            #container {
-                width: 300px;
-            }
-
-            #options,
-            #status {
-                cursor: pointer;
-                text-align: center;
-                width: 100%;
-                display: inline-block;
-            }
-
-            #options {
-                display: none;
-            }
-        </style>
+        <link rel="stylesheet" href="assets/css/assistant.css">
     </head>
 
     <body>
+        <h1>Redmine Assistant</h1>
+
         <div id="container">
-            <h1>Redmine Assistant</h1>
             <div id="status"></div>
             <strong title="Set Options" id="options">Set Options</strong>
+        </div>
+
+        <div id="spinner">
+          <div class="dot1"></div>
+          <div class="dot2"></div>
         </div>
         <script src="assistant.js"></script>
     </body>

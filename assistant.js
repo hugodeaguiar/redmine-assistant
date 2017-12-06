@@ -1,4 +1,12 @@
-var tab;
+var tab, current_status;
+
+function isEmpty(variable) {
+	if(typeof variable == 'undefined' || variable == "" || variable == null) {
+		return true;
+	}
+
+	return false;
+}
 
 function get_redmine_url(callback) {
 	var url;
@@ -38,8 +46,43 @@ function options_redirect() {
 }
 
 
+function execute_script(script, callback) {
+	chrome.tabs.executeScript(tab.id, {
+		code : script
+	}, function(response) {
+		callback(response);
+	});
+}
+
+// icon icon-start
+// icon-action icon-pause-action
+// icon-action icon-start-aciton
+function get_current_status_callback(response) {
+	var class_name = response[0];
+
+	if(isEmpty(class_name) == false) {
+		class_name = class_name.split(' ');
+
+		update_class_name(class_name);
+
+		execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", set_current_status)
+	} else {
+		update_status('Nenhum tarefa em execução');
+	}
+}
+
+function set_current_status(response) {
+	var status = response[0];
+
+	update_status(status);
+}
+
 function update_status(status) {
 	document.getElementById('status').textContent = status;
+}
+
+function update_class_name(class_name) {
+	document.getElementById('status').className = class_name;
 }
 
 function run_action() {
@@ -49,7 +92,7 @@ function run_action() {
 	switch(statusElement.dataset.status) {
 		case 'start':
 			chrome.tabs.executeScript(tab.id, {
-				code : "document.getElementById('time-logger-menu').querySelector('a.icon-start').click(); document.getElementById('time-logger-menu').querySelector('.icon').textContent;"
+				code : "document.getElementById('time-logger-menu').querySelector('a.icon-start').click();"
 			}, update_status(status));
 			break;
 		case 'pause':
@@ -70,27 +113,7 @@ function active_assistant() {
 				}
 
 				if(typeof tab != 'undefined' && tab != "") {
-					chrome.tabs.executeScript(tab.id, {
-						code : "document.getElementById('time-logger-menu').querySelector('.icon').textContent;"
-					}, function(status) {
-						status = status[0];
-						if(typeof status != 'undefined' && status != "" && status != null) {
-							var statusElement = document.getElementById('status');
-							statusElement.textContent = status;
-
-							status = status.toLowerCase();
-
-							if(status.indexOf("iniciar") != -1 || status.indexOf("start") != -1 || status.indexOf("play") != -1) {
-								statusElement.dataset.status = 'start';
-							} else if(status.indexOf("pausar") != -1 || status.indexOf("pause") != -1) {
-								statusElement.dataset.status = 'pause';
-							} else {
-								statusElement.dataset.status = '';
-							}
-						} else {
-							document.getElementById('status').textContent = "ABA NÃO ENCONTRADA";
-						}
-					});
+					execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').className;", get_current_status_callback)
 				} else {
 					document.getElementById('status').textContent = "ABA NÃO ENCONTRADA";
 				}

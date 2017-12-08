@@ -115,13 +115,11 @@ var Assistant = {
 		var class_name = response[0];
 
 		if(Helper.isEmpty(class_name) == false) {
-			class_name = class_name.split(' ');
-
 			Assistant.update_class_name(class_name);
 
-			Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", set_current_status)
+			Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", Assistant.set_current_status)
 		} else {
-			Assistant.update_status('Nenhum tarefa em execução');
+			Assistant.update_status('Nenhuma tarefa em execução');
 		}
 	},
 

@@ -15,6 +15,7 @@
     "storage",
     "tabs",
     "http://*/",
-    "https://*/"
+    "https://*/",
+    "idle"
   ]
 }

@@ -10,8 +10,11 @@ function save_options() {
         return;
     }
 
+    var screensaver = document.querySelector('#screensaver:checked') == null ? false : true;
+
     chrome.storage.sync.set({
-        redmineurl: url
+        redmineurl: url,
+        enable_screensaver: screensaver
     }, function() {
         update_status_message("Options Saved.", false)
     });
@@ -45,6 +48,12 @@ function restore_options() {
     chrome.storage.sync.get('redmineurl', function(items) {
         if(typeof items.redmineurl != 'undefined' && items.redmineurl != "") {
             document.getElementById('url').value = items.redmineurl;
+        }
+    });
+
+    chrome.storage.sync.get('enable_screensaver', function(items) {
+        if(typeof items.enable_screensaver != 'undefined' && items.enable_screensaver != "") {
+            document.querySelector('#screensaver').checked = items.enable_screensaver;
         }
     });
 }

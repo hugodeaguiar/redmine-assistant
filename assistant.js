@@ -49,6 +49,7 @@ var Helper = {
 
 	    	if(typeof url == 'undefined' || url == "") {
 	    		document.getElementById('options').style.display = "inline-block";
+				document.getElementById('action-button').style.display = "none";
 				callback(false);
 			} else {
 				url = url.toLowerCase();
@@ -64,6 +65,10 @@ var Helper = {
 		var options_url = chrome.extension.getURL("options.html");
 
 		chrome.tabs.create({ url: options_url });
+	},
+
+	save_option : function(data) {
+	    chrome.storage.sync.set(data);
 	}
 };
 
@@ -82,7 +87,7 @@ var Assistant = {
 						}
 					}
 
-					if(typeof Assistant.tab != 'undefined' && Assistant.tab != "") {
+					if(!Helper.isEmpty(Assistant.tab)) {
 						Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').className;", Assistant.get_current_status_callback)
 					} else {
 						document.getElementById('action-button').style.display = "none";
@@ -107,8 +112,10 @@ var Assistant = {
 
 	change_task : function(state) {
 		Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').click();", (response) => {
-			Assistant.changeActionButton(state);
-			Assistant.getTaskNumber();
+			setTimeout(function() {
+				Assistant.changeActionButton(state);
+				Assistant.getTaskNumber();
+			}, 300);
 		});
 	},
 
@@ -120,18 +127,22 @@ var Assistant = {
 
 		if(Helper.isEmpty(class_name) == false) {
 			Assistant.update_class_name(class_name);
+			var state = false;
 
 			if(class_name.indexOf('icon-pause-action') != -1) {
-				Assistant.changeActionButton('pause');
-				Assistant.getTaskNumber();
-			} else if(class_name.indexOf('icon-start-action') != -1) {
-				Assistant.changeActionButton('start');
-				Assistant.getTaskNumber();
+				state = 'pause';
+			} else if(class_name.indexOf('icon-start-action') != -1 || class_name.indexOf('icon-start') != -1) {
+				state = 'start';
 			} else {
 				Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", Assistant.set_current_status)
 			}
 
+			if(state != false) {
+				Assistant.changeActionButton(state);
+				Assistant.getTaskNumber();
+			}
 		} else {
+			document.getElementById('action-button').style.display = "none";
 			Assistant.update_status('Nenhuma tarefa em execução');
 		}
 	},
@@ -162,13 +173,37 @@ var Assistant = {
 		}
 	},
 
-	getTaskNumber : function() {
+	getTaskNumber : function(time) {
 		Helper.execute_script("document.querySelector('#time-logger-menu a.icon').textContent", (task) => {
-			Assistant.update_status('Tarefa ' + task[0]);
+			Assistant.update_status(task[0]);
 		});
+	},
+
+	screensaver_monitor : function() {
+		chrome.storage.sync.get('enable_screensaver', function(items) {
+			if(items.enable_screensaver == true) {
+				chrome.idle.onStateChanged.addListener(function(state) {
+					if(state == 'idle' || state == 'locked') {
+						if(document.getElementById('action-button').className.indexOf('pause-button') != -1) {
+							Helper.save_option({auto_update : true})
+							Assistant.run_action();
+						}
+					} else if(state == 'active') {
+					    chrome.storage.sync.get('auto_update', function(items) {
+					        if(!Helper.isEmpty(items.auto_update) && items.auto_update == true) {
+								Helper.save_option({auto_update : false})
+								Assistant.run_action();
+							}
+					    });
+					}
+				});
+			}
+	    });
 	}
 };
 
 document.addEventListener('DOMContentLoaded', Assistant.active_assistant);
 document.getElementById('action-button').addEventListener("click", Assistant.run_action);
 document.getElementById('options').addEventListener("click", Helper.options_redirect);
+
+document.addEventListener('DOMContentLoaded', Assistant.screensaver_monitor);

@@ -2,28 +2,51 @@ h1 {
     font-size: 16px;
     text-transform: uppercase;
     text-align: center;
-    color: #ce1800;
+    color: #ff5050;
 }
 
 body {
     width: 225px;
-    height: 250px;
+    height: 120px;
+    background-color: #FFF;
 }
 
 #options,
 #status {
-    cursor: pointer;
     text-align: center;
     width: 100%;
     display: inline-block;
+    color: #555;
+    font-weight: 700;
+}
+
+#status {
+    margin-bottom: 15px;
 }
 
 #options {
     display: none;
+    cursor: pointer;
+}
+
+#action-button {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+}
+
+.pause-button {
+    background: transparent url(../img/pause.png) center center no-repeat;
+}
+
+.play-button {
+    background: transparent url(../img/play.png) center center no-repeat;
 }
 
 #spinner {
-    margin: 100px auto;
+    margin: 0px auto;
     width: 40px;
     height: 40px;
     position: relative;

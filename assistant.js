@@ -85,6 +85,7 @@ var Assistant = {
 					if(typeof Assistant.tab != 'undefined' && Assistant.tab != "") {
 						Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').className;", Assistant.get_current_status_callback)
 					} else {
+						document.getElementById('action-button').style.display = "none";
 						document.getElementById('status').textContent = "ABA NÃO ENCONTRADA";
 					}
 				});
@@ -94,18 +95,21 @@ var Assistant = {
 
 
 	run_action : function() {
-		var statusElement = document.getElementById('status');
-		var current_status = statusElement.textContent;
+		var actionButton 	= document.getElementById('action-button');
+		var class_name 		= actionButton.className;
 
-		switch(statusElement.dataset.status) {
-			case 'start':
-				chrome.tabs.executeScript(tab.id, {
-					code : "document.getElementById('time-logger-menu').querySelector('a.icon-start').click();"
-				}, Assistant.update_status(status));
-				break;
-			case 'pause':
-			break;
+		if(class_name.indexOf('play-button') != -1) {
+			Assistant.change_task('pause');
+		} else if(class_name.indexOf('pause-button' != -1)) {
+			Assistant.change_task('start');
 		}
+	},
+
+	change_task : function(state) {
+		Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').click();", (response) => {
+			Assistant.changeActionButton(state);
+			Assistant.getTaskNumber();
+		});
 	},
 
 	// icon icon-start
@@ -117,7 +121,16 @@ var Assistant = {
 		if(Helper.isEmpty(class_name) == false) {
 			Assistant.update_class_name(class_name);
 
-			Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", Assistant.set_current_status)
+			if(class_name.indexOf('icon-pause-action') != -1) {
+				Assistant.changeActionButton('pause');
+				Assistant.getTaskNumber();
+			} else if(class_name.indexOf('icon-start-action') != -1) {
+				Assistant.changeActionButton('start');
+				Assistant.getTaskNumber();
+			} else {
+				Helper.execute_script("document.querySelector('a[data-replace=\"#time-logger-menu\"]').textContent;", Assistant.set_current_status)
+			}
+
 		} else {
 			Assistant.update_status('Nenhuma tarefa em execução');
 		}
@@ -135,9 +148,27 @@ var Assistant = {
 
 	update_class_name : function(class_name) {
 		document.getElementById('status').className = class_name;
+	},
+
+	changeActionButton : function(state) {
+		var button = document.getElementById('action-button');
+
+		if(state == 'start') {
+			button.classList.remove('pause-button');
+			button.className = 'play-button';
+		} else {
+			button.classList.remove('play-button');
+			button.className = 'pause-button';
+		}
+	},
+
+	getTaskNumber : function() {
+		Helper.execute_script("document.querySelector('#time-logger-menu a.icon').textContent", (task) => {
+			Assistant.update_status('Tarefa ' + task[0]);
+		});
 	}
 };
 
 document.addEventListener('DOMContentLoaded', Assistant.active_assistant);
-document.getElementById('status').addEventListener("click", Assistant.run_action);
+document.getElementById('action-button').addEventListener("click", Assistant.run_action);
 document.getElementById('options').addEventListener("click", Helper.options_redirect);

@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Redmine Assistant",
-  "description": "To do.",
+  "description": "Assistant to manage tasks of Redmine.",
   "version": "1.0",
 
   "browser_action": {

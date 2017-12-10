@@ -1,1 +1,1 @@
-# Redmine Assistant
+# Redmine Assistant - Chrome Extension

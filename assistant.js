@@ -182,6 +182,7 @@ var Assistant = {
 	screensaver_monitor : function() {
 		chrome.storage.sync.get('enable_screensaver', function(items) {
 			if(items.enable_screensaver == true) {
+				chrome.idle.setDetectionInterval(15);
 				chrome.idle.onStateChanged.addListener(function(state) {
 					if(state == 'idle' || state == 'locked') {
 						if(document.getElementById('action-button').className.indexOf('pause-button') != -1) {
